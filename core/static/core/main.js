@@ -46,27 +46,29 @@ function setupPuzzleSizeSettingsWidget() {
   mInput.addEventListener("change", (e) => {
     if (e.target.value) {
       e.target.value = clamp(e.target.value, MINMAX_SIZE[0], MINMAX_SIZE[1]);
-      m = Number(e.target.value);
+      m = parseInt(e.target.value);
+      constraintNumbers = { 0: -1 };
       generateInitialGrid();
     }
   });
   nInput.addEventListener("change", (e) => {
     if (e.target.value) {
       e.target.value = clamp(e.target.value, MINMAX_SIZE[0], MINMAX_SIZE[1]);
-      n = Number(e.target.value);
+      n = parseInt(e.target.value);
       gridDiv.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
       for (const minCellCount of Object.keys(GRID_WIDTH).reverse()) {
-        if (n >= Number(minCellCount)) {
+        if (n >= parseInt(minCellCount)) {
           gridDiv.style.width = GRID_WIDTH[minCellCount];
           break;
         }
       }
       for (const minCellCount of Object.keys(FONT_SIZE).reverse()) {
-        if (n >= Number(minCellCount)) {
+        if (n >= parseInt(minCellCount)) {
           gridDiv.style.fontSize = FONT_SIZE[minCellCount];
           break;
         }
       }
+      constraintNumbers = { 0: -1 };
       generateInitialGrid();
     }
   });
@@ -103,9 +105,14 @@ function handleClick(i, j) {
       cornersSelected = [i, j];
     } else {
       const [i2, j2] = cornersSelected;
-      for (let x = Math.min(i,i2); x <= Math.max(i,i2); x++)
-        for (let y = Math.min(j,j2); y <= Math.max(j,j2); y++)
+      for (let x = Math.min(i,i2); x <= Math.max(i,i2); x++) {
+        for (let y = Math.min(j,j2); y <= Math.max(j,j2); y++) {
+          constraintNumbers[territoryNums[x][y]] = -1;
+          const [topX, topY] = topCornerTerritories[territoryNums[x][y]];
+          cellDivs[topX][topY].getElementsByTagName("p")[0].textContent = "";
           territoryNums[x][y] = r;
+        }
+      }
       recalculateTerritories();
       drawTerritories();
       resetAddTerritoryStates();
@@ -202,6 +209,16 @@ function recalculateTerritories() {
       if (!vis[[i,j]])
         dfs(i, j, currentTerritoryNum++);
   r = currentTerritoryNum;
+
+  constraintNumbers = {};
+  for (let t = 0; t < r; t++) constraintNumbers[t] = -1;
+  for (let i = 0; i < m; i++) {
+    for (let j = 0; j < n; j++) {
+      const value = cellDivs[i][j].getElementsByTagName("p")[0].textContent;
+      if (isNumeric(value))
+        constraintNumbers[territoryNums[i][j]] = parseInt(value);
+    }
+  }
 }
 
 function drawTerritories() {
@@ -229,5 +246,5 @@ main();
 
 function clamp(num, min, max) { return Math.min(Math.max(num, min), max); }
 function validCell(x, y) { return x >= 0 && x < m && y >= 0 && y < n; }
-function isNumeric(s) { return /^\d$/.test(s); }
+function isNumeric(s) { return /^\d+$/.test(s); }
 function isTypableKey(key) { return ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Home", "End"].includes(key); }
