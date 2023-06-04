@@ -75,7 +75,7 @@ p, h1, h2, h3, h4, h5, h6 {
 /* ============================== */
 
 #grid {
-  width: 20rem;
+  width: 20%;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   border: solid 1px black;

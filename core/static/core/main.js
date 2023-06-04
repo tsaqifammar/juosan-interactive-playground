@@ -1,5 +1,12 @@
 /* Const */
 const MINMAX_SIZE = [1, 50];
+const GRID_WIDTH = {
+  1: "20%",
+  10: "30%",
+  20: "40%",
+  30: "50%",
+  40: "60%",
+};
 const DIRS = {
   "Top": [-1, 0],
   "Left": [0, -1],
@@ -56,6 +63,12 @@ function setupPuzzleSizeSettingsWidget() {
       e.target.value = clamp(e.target.value, MINMAX_SIZE[0], MINMAX_SIZE[1]);
       n = Number(e.target.value);
       gridDiv.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
+      for (const minCellCount of Object.keys(GRID_WIDTH).reverse()) {
+        if (n >= Number(minCellCount)) {
+          gridDiv.style.width = GRID_WIDTH[minCellCount];
+          break;
+        }
+      }
       generateInitialGrid();
     }
   });
