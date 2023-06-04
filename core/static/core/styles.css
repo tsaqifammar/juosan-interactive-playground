@@ -1,8 +1,92 @@
-body {
-  background-color: red;
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&display=swap');
+
+/* ====  CSS reset defaults ==== */
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
-.container-80 {
-  width: 80%;
+* {
+  margin: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  line-height: 1.5;
+  font-family: 'Rubik', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+input, button, textarea, select {
+  font: inherit;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
+
+#root, #__next {
+  isolation: isolate;
+}
+/* ============================= */
+
+.container-90 {
+  width: 90%;
   margin: 0 auto;
+}
+
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  gap: 1.3rem;
+}
+
+/* ======== tool widgets ======== */
+
+#grid-size, #tools {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+#constraint-number {
+  width: 4rem;
+  margin-left: 0.5rem;
+}
+
+#message {
+  position: absolute;
+  top: -2rem;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+
+/* ============================== */
+
+#grid {
+  width: 20rem;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.cell {
+  border: dashed 1px lightgray;
+  aspect-ratio: 1 / 1;
+}
+
+.cell {
+  position: relative;
 }
