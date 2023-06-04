@@ -23,8 +23,8 @@
     </div>
     <div id="tools">
       <div>
-        <input type="radio" id="split" name="tool" value="split" checked>
-        <label for="split">Add Territory</label>
+        <input type="radio" id="add-territory" name="tool" value="add-territory">
+        <label for="add-territory">Add Territory</label>
       </div>
       <div>
         <input type="radio" id="add-constraint" name="tool" value="add-constraint">
@@ -32,10 +32,10 @@
         <input type="number" id="constraint-number" name="tool" min="1" value="1">
       </div>
       <button type="button" id="undo">Undo</button>
-      <button type="button" id="redo">Redo</button>
+      <button type="button" id="reset">Reset</button>
     </div>
     <div style="position: relative; margin-top: 2.5rem;">
-      <div id="message">Note: Hey you!</div>
+      <div id="message"></div>
       <div id="grid"></div>
     </div>
   </div>

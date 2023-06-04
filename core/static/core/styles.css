@@ -67,11 +67,9 @@ p, h1, h2, h3, h4, h5, h6 {
 #message {
   position: absolute;
   top: -2rem;
-  margin-left: auto;
-  margin-right: auto;
-  left: 0;
-  right: 0;
-  text-align: center;
+  left: 50%;
+  width: max-content;
+  transform: translate(-50%, 0);
 }
 
 /* ============================== */
@@ -80,11 +78,17 @@ p, h1, h2, h3, h4, h5, h6 {
   width: 20rem;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
+  border: solid 1px black;
 }
 
 .cell {
   border: dashed 1px lightgray;
   aspect-ratio: 1 / 1;
+  cursor: pointer;
+}
+
+.cell:hover {
+  background-color: whitesmoke;
 }
 
 .cell {
