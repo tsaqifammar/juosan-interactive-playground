@@ -85,7 +85,11 @@ p, h1, h2, h3, h4, h5, h6 {
   border: dashed 1px lightgray;
   aspect-ratio: 1 / 1;
   cursor: pointer;
+  padding: 5%;
 }
+
+.cell > p { height: 100%; }
+.cell > p:focus { outline: 2px dashed lightblue; }
 
 .cell:hover {
   background-color: whitesmoke;
