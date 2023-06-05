@@ -9,7 +9,10 @@
   <title>Juosan Interactive Playground</title>
 </head>
 <body>
-  <div class="container-90 main-layout">
+  <form id="csrf-token-holder" style="display: none;" action="" method="post">
+    {% csrf_token %}
+  </form>
+  <fieldset id="fields" style="border: none;" class="container-90 main-layout">
     <h1 style="text-align: center">Juosan Interactive Playground</h1>
     <div id="grid-size">
       <div>
@@ -32,12 +35,16 @@
       </div>
       <button type="button" id="undo">Undo</button>
       <button type="button" id="reset">Reset</button>
+      <div style="display: flex; align-items: center; gap: 0.75rem">
+        <button type="button" id="submit">Solve</button>
+        <div id="loader" class="loading"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+      </div>
     </div>
     <div style="position: relative; margin-top: 2.5rem; width: 100%; display: flex; justify-content: center;">
       <div id="message"></div>
       <div id="grid"></div>
     </div>
-  </div>
+  </fieldset>
   <script src="{% static 'core/main.js' %}"></script>
 </body>
 </html>

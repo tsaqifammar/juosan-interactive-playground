@@ -98,3 +98,24 @@ p, h1, h2, h3, h4, h5, h6 {
 .cell {
   position: relative;
 }
+
+/* ========== utils ============= */
+
+.loading {
+  --loading-width: 2.5px;
+  --loading-color: dimgray;
+  --below-color: #f3f3f3;
+  border: var(--loading-width) solid var(--below-color);
+  border-top: var(--loading-width) solid var(--loading-color);
+  border-bottom: var(--loading-width) solid var(--loading-color);
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  animation: spin 2s linear infinite;
+  display: none;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

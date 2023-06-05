@@ -6,15 +6,22 @@ const DIRS = { "Top": [-1, 0], "Left": [0, -1], "Bottom": [1, 0], "Right": [0, 1
 const NO_WALL_STYLE = "dashed 1px lightgray";
 const WALL_STYLE = "solid 1px black";
 const TOOLS = { ADD_TERRITORY: "add-territory", ADD_CONSTRAINT: "add-constraint" }
+const CSRF_TOKEN = document.querySelector('#csrf-token-holder').querySelector('input').value;
 
 /* Tracked states */
 let m = 5, n = 5, r = 1;
 let territoryNums = Array.from(Array(5), _ => Array(5).fill(0));
 let territorySizes = { 0: m*n };
-let constraintNumbers = { 0: -1 };
 let cellDivs = [];
 let messageDiv = document.getElementById("message");
 let selectedTool = "";
+let isSolving = false;
+function setIsSolving(val) {
+  isSolving = val;
+  document.getElementById("fields").disabled = val;
+  document.getElementById("loader").style.display = val ? "block" : "none";
+  if (val) resetAddTerritoryStates();
+}
 
 // States for "add territory" tool
 let cornersSelected = null;
@@ -47,7 +54,6 @@ function setupPuzzleSizeSettingsWidget() {
     if (e.target.value) {
       e.target.value = clamp(e.target.value, MINMAX_SIZE[0], MINMAX_SIZE[1]);
       m = parseInt(e.target.value);
-      constraintNumbers = { 0: -1 };
       generateInitialGrid();
     }
   });
@@ -68,7 +74,6 @@ function setupPuzzleSizeSettingsWidget() {
           break;
         }
       }
-      constraintNumbers = { 0: -1 };
       generateInitialGrid();
     }
   });
@@ -91,14 +96,52 @@ function setupTools() {
   document.getElementById("add-constraint").addEventListener("change", (e) => handleToolChange(e.target.value));
 }
 
+function setupSubmitButton() {
+  const submitButton = document.getElementById("submit");
+  submitButton.addEventListener("click", (e) => {
+    setIsSolving(true);
+    let N = new Array(r);
+    for (let t = 0; t < r; t++) {
+      const [topI, topJ] = topCornerTerritories[t];
+      const val = cellDivs[topI][topJ].getElementsByTagName("p")[0].textContent;
+      N[t] = isNumeric(val) ? parseInt(val) : -1;
+    }
+
+    const url = "/solve";
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': CSRF_TOKEN,
+      },
+      body: JSON.stringify({
+        m, n, r, N,
+        R: territoryNums,
+      }),
+    }).then((res) => {
+      if (!res.ok) throw new Error('Request failed with status: ' + res.status);
+      return res.json();
+    }).then((data) => {
+      setIsSolving(false);
+      const { is_solvable, solution, time_taken } = data;
+      console.log(data);
+    }).catch((e) => {
+      setIsSolving(false);
+      alert(e.message);
+    });
+  });
+}
+
 function setupToolWidgets() {
   setupPuzzleSizeSettingsWidget();
   setupTools();
+  setupSubmitButton();
 }
 
 /* =========================================== */
 
 function handleClick(i, j) {
+  if (isSolving) return;
   const handleAddTerritory = () => {
     if (cornersSelected === null) {
       cellDivs[i][j].style.backgroundColor = "green";
@@ -107,7 +150,6 @@ function handleClick(i, j) {
       const [i2, j2] = cornersSelected;
       for (let x = Math.min(i,i2); x <= Math.max(i,i2); x++) {
         for (let y = Math.min(j,j2); y <= Math.max(j,j2); y++) {
-          constraintNumbers[territoryNums[x][y]] = -1;
           const [topX, topY] = topCornerTerritories[territoryNums[x][y]];
           cellDivs[topX][topY].getElementsByTagName("p")[0].textContent = "";
           territoryNums[x][y] = r;
@@ -146,8 +188,10 @@ function generateInitialGrid() {
     cellDiv.classList.add("door-cell-top");
     cellDiv.id = `cell-${i}-${j}`;
     const p = document.createElement("p");
+
     p.addEventListener("keydown", (e) => {
       const key = e.key;
+      
       if (!isNumeric(key) && !isTypableKey(key))
         e.preventDefault();
       
@@ -156,8 +200,6 @@ function generateInitialGrid() {
         if (value < 1 || value > territorySizes[territoryNums[i][j]]) {
           alert("Constraint is larger than territory size.")
           e.preventDefault();
-        } else {
-          constraintNumbers[territoryNums[i][j]] = value;
         }
       }
     });
@@ -178,6 +220,7 @@ function generateInitialGrid() {
   }
   document.getElementById("add-territory").checked = false;
   document.getElementById("add-constraint").checked = false;
+  messageDiv.textContent = "";
   drawTerritories();
 }
 
@@ -209,16 +252,6 @@ function recalculateTerritories() {
       if (!vis[[i,j]])
         dfs(i, j, currentTerritoryNum++);
   r = currentTerritoryNum;
-
-  constraintNumbers = {};
-  for (let t = 0; t < r; t++) constraintNumbers[t] = -1;
-  for (let i = 0; i < m; i++) {
-    for (let j = 0; j < n; j++) {
-      const value = cellDivs[i][j].getElementsByTagName("p")[0].textContent;
-      if (isNumeric(value))
-        constraintNumbers[territoryNums[i][j]] = parseInt(value);
-    }
-  }
 }
 
 function drawTerritories() {
