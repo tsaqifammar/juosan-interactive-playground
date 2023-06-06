@@ -75,17 +75,18 @@ p, h1, h2, h3, h4, h5, h6 {
 /* ============================== */
 
 #grid {
-  width: 20%;
+  width: max(300px, 20%);
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  border: solid 1px black;
+  border: solid 2px black;
 }
 
 .cell {
-  border: dashed 1px lightgray;
+  border: dashed 1px gray;
   aspect-ratio: 1 / 1;
   cursor: pointer;
   padding: 5%;
+  position: relative;
 }
 
 .cell > p { height: 100%; }
@@ -95,8 +96,24 @@ p, h1, h2, h3, h4, h5, h6 {
   background-color: whitesmoke;
 }
 
-.cell {
-  position: relative;
+.cell-dash::before {
+  content: "";
+  width: 85%;
+  height: 10%;
+  position: absolute;
+  margin: auto;
+  inset: 0;
+  background-color: rgb(47,163,200);
+}
+
+.cell-bar::before {
+  content: "";
+  width: 10%;
+  height: 85%;
+  position: absolute;
+  margin: auto;
+  inset: 0;
+  background-color: rgb(200,52,47);
 }
 
 /* ========== utils ============= */

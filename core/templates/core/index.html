@@ -12,7 +12,7 @@
   <form id="csrf-token-holder" style="display: none;" action="" method="post">
     {% csrf_token %}
   </form>
-  <fieldset id="fields" style="border: none;" class="container-90 main-layout">
+  <div id="fields" class="container-90 main-layout">
     <h1 style="text-align: center">Juosan Interactive Playground</h1>
     <div id="grid-size">
       <div>
@@ -33,7 +33,6 @@
         <input type="radio" id="add-constraint" name="tool" value="add-constraint">
         <label for="add-constraint">Add Constraint Number</label>
       </div>
-      <button type="button" id="undo">Undo</button>
       <button type="button" id="reset">Reset</button>
       <div style="display: flex; align-items: center; gap: 0.75rem">
         <button type="button" id="submit">Solve</button>
@@ -44,7 +43,7 @@
       <div id="message"></div>
       <div id="grid"></div>
     </div>
-  </fieldset>
+  </div>
   <script src="{% static 'core/main.js' %}"></script>
 </body>
 </html>

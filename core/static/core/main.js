@@ -4,7 +4,7 @@ const GRID_WIDTH = { 1: "25%", 10: "40%", 20: "50%", 30: "75%", 40: "90%" };
 const FONT_SIZE = { 1: "medium", 10: "small", 20: "x-small", 30: "x-small", 40: "xx-small" }
 const DIRS = { "Top": [-1, 0], "Left": [0, -1], "Bottom": [1, 0], "Right": [0, 1] };
 const NO_WALL_STYLE = "dashed 1px lightgray";
-const WALL_STYLE = "solid 1px black";
+const WALL_STYLE = "solid 2px black";
 const TOOLS = { ADD_TERRITORY: "add-territory", ADD_CONSTRAINT: "add-constraint" }
 const CSRF_TOKEN = document.querySelector('#csrf-token-holder').querySelector('input').value;
 
@@ -15,13 +15,6 @@ let territorySizes = { 0: m*n };
 let cellDivs = [];
 let messageDiv = document.getElementById("message");
 let selectedTool = "";
-let isSolving = false;
-function setIsSolving(val) {
-  isSolving = val;
-  document.getElementById("fields").disabled = val;
-  document.getElementById("loader").style.display = val ? "block" : "none";
-  if (val) resetAddTerritoryStates();
-}
 
 // States for "add territory" tool
 let cornersSelected = null;
@@ -40,10 +33,23 @@ function setEditables(value) {
     cellDivs[x][y].getElementsByTagName("p")[0].contentEditable = value;
 }
 
-// states undo
-let changesHistory = []; // { onUndo: () => {} } where onUndo is executed when popped
+let isSolving = false;
+let solutionIsShown = false;
+function setIsSolving(val) {
+  isSolving = val;
+  setToolsDisabledValue(val);
+  document.getElementById("loader").style.display = val ? "block" : "none";
+  if (val) resetAddTerritoryStates();
+}
 
 /* ============== Tool widgets =============== */
+
+function setToolsDisabledValue(value) {
+  document.querySelectorAll("#m,#n,#add-territory,#add-constraint,#reset,#submit")
+    .forEach(e => {
+      e.disabled = value;
+    })
+}
 
 function setupPuzzleSizeSettingsWidget() {
   // Puzzle size settings
@@ -55,6 +61,7 @@ function setupPuzzleSizeSettingsWidget() {
       e.target.value = clamp(e.target.value, MINMAX_SIZE[0], MINMAX_SIZE[1]);
       m = parseInt(e.target.value);
       generateInitialGrid();
+      recalculateTerritories();
     }
   });
   nInput.addEventListener("change", (e) => {
@@ -64,7 +71,7 @@ function setupPuzzleSizeSettingsWidget() {
       gridDiv.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
       for (const minCellCount of Object.keys(GRID_WIDTH).reverse()) {
         if (n >= parseInt(minCellCount)) {
-          gridDiv.style.width = GRID_WIDTH[minCellCount];
+          gridDiv.style.width = `max(500px, ${GRID_WIDTH[minCellCount]})`;
           break;
         }
       }
@@ -75,12 +82,19 @@ function setupPuzzleSizeSettingsWidget() {
         }
       }
       generateInitialGrid();
+      recalculateTerritories();
     }
   });
 }
 
 function setupTools() {
   const handleToolChange = (toolName) => {
+    if (solutionIsShown) {
+      solutionIsShown = false;
+      for (let i = 0; i < m; i++)
+        for (let j = 0; j < n; j++)
+          cellDivs[i][j].classList.remove("cell-dash", "cell-bar");
+    }
     if (toolName === TOOLS.ADD_TERRITORY) {
       selectedTool = TOOLS.ADD_TERRITORY;
       messageDiv.textContent = "Pick two opposite corners of the territory.";
@@ -99,6 +113,9 @@ function setupTools() {
 function setupSubmitButton() {
   const submitButton = document.getElementById("submit");
   submitButton.addEventListener("click", (e) => {
+    document.getElementById("add-territory").checked = false;
+    document.getElementById("add-constraint").checked = false;
+    messageDiv.textContent = "";
     setIsSolving(true);
     let N = new Array(r);
     for (let t = 0; t < r; t++) {
@@ -123,8 +140,15 @@ function setupSubmitButton() {
       return res.json();
     }).then((data) => {
       setIsSolving(false);
-      const { is_solvable, solution, time_taken } = data;
-      console.log(data);
+      const { is_solvable, solution } = data;
+      if (is_solvable) {
+        for (let i = 0; i < m; i++)
+          for (let j = 0; j < n; j++)
+            cellDivs[i][j].classList.add(solution[i][j] === "-" ? "cell-dash" : "cell-bar");
+        solutionIsShown = true;
+      } else {
+        messageDiv.textContent = "The puzzle does not have a solution."
+      }
     }).catch((e) => {
       setIsSolving(false);
       alert(e.message);
@@ -185,7 +209,6 @@ function generateInitialGrid() {
   const generateCell = (i, j) => {
     const cellDiv = document.createElement("div");
     cellDiv.classList.add("cell");
-    cellDiv.classList.add("door-cell-top");
     cellDiv.id = `cell-${i}-${j}`;
     const p = document.createElement("p");
 
