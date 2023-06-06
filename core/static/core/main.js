@@ -6,7 +6,6 @@ const DIRS = { "Top": [-1, 0], "Left": [0, -1], "Bottom": [1, 0], "Right": [0, 1
 const NO_WALL_STYLE = "dashed 1px lightgray";
 const WALL_STYLE = "solid 2px black";
 const TOOLS = { ADD_TERRITORY: "add-territory", ADD_CONSTRAINT: "add-constraint" }
-const CSRF_TOKEN = document.querySelector('#csrf-token-holder').querySelector('input').value;
 
 /* Tracked states */
 let m = 5, n = 5, r = 1;
@@ -172,7 +171,6 @@ function setupSubmitButton() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-CSRFToken': CSRF_TOKEN,
       },
       body: JSON.stringify({
         m, n, r, N,
@@ -238,7 +236,7 @@ function handleClick(i, j) {
 
   if (selectedTool === TOOLS.ADD_TERRITORY) {
     handleAddTerritory();
-  } else {
+  } else if (selectedTool === TOOLS.ADD_CONSTRAINT) {
     handleAddConstraint();
   }
 }
@@ -311,6 +309,7 @@ function generateInitialGrid() {
   document.getElementById("add-territory").checked = false;
   document.getElementById("add-constraint").checked = false;
   messageDiv.textContent = "";
+  recalculateTerritories();
   drawTerritories();
 }
 
