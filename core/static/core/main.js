@@ -110,6 +110,10 @@ function setupTools() {
   document.getElementById("add-constraint").addEventListener("change", (e) => handleToolChange(e.target.value));
 }
 
+function setupResetButton() {
+  document.getElementById("reset").addEventListener("click", (e) => generateInitialGrid())
+}
+
 function setupSubmitButton() {
   const submitButton = document.getElementById("submit");
   submitButton.addEventListener("click", (e) => {
@@ -159,6 +163,7 @@ function setupSubmitButton() {
 function setupToolWidgets() {
   setupPuzzleSizeSettingsWidget();
   setupTools();
+  setupResetButton();
   setupSubmitButton();
 }
 
