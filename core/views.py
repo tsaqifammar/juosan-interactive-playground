@@ -1,5 +1,5 @@
 from django.views.decorators.http import require_http_methods
-from django.http import HttpRequest, JsonResponse, HttpResponse
+from django.http import HttpRequest, JsonResponse, HttpResponseBadRequest
 from django.shortcuts import render
 from core.lib.solver import Solver
 import json
@@ -12,7 +12,11 @@ def index(request: HttpRequest):
 @require_http_methods(["POST"])
 def solve(request: HttpRequest):
   body = json.loads(request.body.decode('utf-8'))
-  # TODO: Add validate if input is valid in body
+
+  for key in ["m", "n", "r", "N", "R"]:
+    if not (key in body):
+      return HttpResponseBadRequest("The keys m, n, r, N, and R must all be included.")
+
   solver = Solver(**body)
   val = solver.solve()
   return JsonResponse(val)

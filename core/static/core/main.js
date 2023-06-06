@@ -115,8 +115,23 @@ function setupResetButton() {
 }
 
 function setupSubmitButton() {
+  const validateInstanceRectangular = () => {
+    for (let i = 0; i < m - 1; i++) {
+      for (let j = 0; j < n - 1; j++) {
+        let con1 = (territoryNums[i][j] == territoryNums[i+1][j+1] && territoryNums[i+1][j] != territoryNums[i][j+1]);
+        let con2 = (territoryNums[i][j] != territoryNums[i+1][j+1] && territoryNums[i+1][j] == territoryNums[i][j+1]);
+        if (con1 || con2)
+          return false;
+      }
+    }
+    return true;
+  };
   const submitButton = document.getElementById("submit");
   submitButton.addEventListener("click", (e) => {
+    if (!validateInstanceRectangular()) {
+      alert("All territories must be rectangular.");
+      return;
+    }
     document.getElementById("add-territory").checked = false;
     document.getElementById("add-constraint").checked = false;
     messageDiv.textContent = "";
