@@ -33,6 +33,29 @@ function setEditables(value) {
     cellDivs[x][y].getElementsByTagName("p")[0].contentEditable = value;
 }
 
+let currentlyHoveredTerritory = -1;
+const CELL_HIGHLIGHTED_CLASS = "cell-highlighted";
+
+function highlightRegion(x, y, highlight, t) {
+  if (highlight)
+    cellDivs[x][y].classList.add(CELL_HIGHLIGHTED_CLASS);
+  else
+    cellDivs[x][y].classList.remove(CELL_HIGHLIGHTED_CLASS);
+  for (const dir in DIRS) {
+    const [dx, dy] = DIRS[dir];
+    let adjI = x + dx, adjJ = y + dy;
+    if (
+      validCell(adjI, adjJ) &&
+      territoryNums[adjI][adjJ] === t &&
+      (
+        highlight && !cellDivs[adjI][adjJ].classList.contains(CELL_HIGHLIGHTED_CLASS) ||
+        !highlight && cellDivs[adjI][adjJ].classList.contains(CELL_HIGHLIGHTED_CLASS)
+      )
+    )
+      highlightRegion(adjI, adjJ, highlight, t);
+  }
+};
+
 let isSolving = false;
 let solutionIsShown = false;
 function setIsSolving(val) {
@@ -132,6 +155,7 @@ function setupSubmitButton() {
       alert("All territories must be rectangular.");
       return;
     }
+    selectedTool = "";
     document.getElementById("add-territory").checked = false;
     document.getElementById("add-constraint").checked = false;
     messageDiv.textContent = "";
@@ -219,12 +243,32 @@ function handleClick(i, j) {
   }
 }
 
+function handleHover(i, j) {
+  if (selectedTool !== TOOLS.ADD_CONSTRAINT) return;
+  if (territoryNums[i][j] === currentlyHoveredTerritory) return;
+
+  if (currentlyHoveredTerritory !== -1) {
+    const [x, y] = topCornerTerritories[currentlyHoveredTerritory];
+    highlightRegion(x, y, false, currentlyHoveredTerritory);
+  }
+  currentlyHoveredTerritory = territoryNums[i][j];
+  highlightRegion(i, j, true, currentlyHoveredTerritory);
+}
+
 function generateInitialGrid() {
   cellDivs = [];
   territoryNums = Array.from(Array(m), _ => Array(n).fill(0));
 
   const gridDiv = document.getElementById("grid");
   gridDiv.replaceChildren();
+  gridDiv.addEventListener("mouseleave", (e) => {
+    if (selectedTool !== TOOLS.ADD_CONSTRAINT) return;
+    if (currentlyHoveredTerritory === -1) return;
+
+    const [x, y] = topCornerTerritories[currentlyHoveredTerritory];
+    highlightRegion(x, y, false, currentlyHoveredTerritory);
+    currentlyHoveredTerritory = -1;
+  });
 
   const generateCell = (i, j) => {
     const cellDiv = document.createElement("div");
@@ -249,6 +293,7 @@ function generateInitialGrid() {
 
     cellDiv.appendChild(p);
     cellDiv.addEventListener("click", () => handleClick(i, j));
+    cellDiv.addEventListener("mouseover", () => handleHover(i, j));
     return cellDiv;
   };
 
@@ -261,6 +306,8 @@ function generateInitialGrid() {
     }
     cellDivs.push(currentRow);
   }
+
+  selectedTool = "";
   document.getElementById("add-territory").checked = false;
   document.getElementById("add-constraint").checked = false;
   messageDiv.textContent = "";

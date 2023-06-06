@@ -116,6 +116,10 @@ p, h1, h2, h3, h4, h5, h6 {
   background-color: rgb(200,52,47);
 }
 
+.cell-highlighted {
+  background-color: whitesmoke;
+}
+
 /* ========== utils ============= */
 
 .loading {
