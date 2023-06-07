@@ -7,6 +7,7 @@
   --gray-100: #f1f5f9;
   --gray-200: #e2e8f0;
   --gray-300: #cbd5e1;
+  --gray-500: #64748b;
   --gray-600: #475569;
   --gray-800: #1e293b;
   --gray-900: #0f172a;
@@ -205,6 +206,8 @@ p, h1, h2, h3, h4, h5, h6 {
 
 /* ============================== */
 
+/* =========== puzzle ============= */
+
 #grid {
   width: max(300px, 20%);
   display: grid;
@@ -250,6 +253,120 @@ p, h1, h2, h3, h4, h5, h6 {
 .cell-highlighted {
   background-color: var(--gray-100);
 }
+
+/* ================================ */
+
+/* ========= how to modal ========= */
+
+#open-modal {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  background: none;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: none;
+}
+
+#open-modal span {
+  border: 1px solid black;
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  border-radius: 50%;
+}
+
+dialog {
+  border: none;
+  background-color: var(--white); 
+  border-radius: 0.5rem;
+  max-width: 50rem; 
+  padding: 1.25rem; 
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); 
+}
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  display: flex; 
+  margin-bottom: 1.25rem; 
+  justify-content: space-between; 
+}
+
+.modal-header button {
+  display: inline-flex; 
+  padding: 0.375rem; 
+  background-color: transparent; 
+  color: var(--gray-300); 
+  font-size: 1rem;
+  line-height: 1.25rem; 
+  border-radius: 0.5rem; 
+  border-style: none;
+  cursor: pointer;
+}
+
+.modal-header button:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.modal-header button:hover {
+  background-color: var(--gray-200); 
+  color: var(--gray-900); 
+}
+
+.modal-header svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.modal-content {
+  font-size: 0.875rem;
+  color: var(--gray-500); 
+}
+
+.modal-content p, .modal-content ul {
+  margin-bottom: 0.75rem; 
+}
+
+.mini-dash, .mini-bar {
+  position: relative;
+  height: 15px;
+  width: 15px;
+  aspect-ratio: 1 / 1;
+  border: 2px solid var(--gray-600);
+  background: none;
+  margin: 0 2px;
+  transform: translateY(-4px);
+}
+
+.mini-dash::before {
+  content: "";
+  width: 85%;
+  height: 20%;
+  position: absolute;
+  margin: auto;
+  inset: 0;
+  background-color: var(--blue-600);
+}
+
+.mini-bar::before {
+  content: "";
+  width: 20%;
+  height: 85%;
+  position: absolute;
+  margin: auto;
+  inset: 0;
+  background-color: var(--red-500);
+}
+
+/* ================================ */
+
 
 /* ========== utils ============= */
 
