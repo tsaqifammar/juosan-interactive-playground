@@ -187,6 +187,7 @@ function setupSubmitButton() {
           for (let j = 0; j < n; j++)
             cellDivs[i][j].classList.add(solution[i][j] === "-" ? "cell-dash" : "cell-bar");
         solutionIsShown = true;
+        messageDiv.textContent = "The puzzle has a solution."
       } else {
         messageDiv.textContent = "The puzzle does not have a solution."
       }

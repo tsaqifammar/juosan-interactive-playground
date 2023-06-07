@@ -20,10 +20,64 @@ class Solver:
     return i*self.n + j + 1
   
   def solve_tractable_less_than_3(self):
-    pass
+    S = [[None for j in range(self.n)] for i in range(self.m)]
+
+    WIN_SYMBOL = '-' if self.m <= 2 else '|'
+    LOSE_SYMBOL = '|' if self.m <= 2 else '-'
+
+    vis = [False for _ in range(self.r)]
+    D = [0 for _ in range(self.r)]
+    P = [0 for _ in range(self.r)]
+
+    def valid(i, j):
+      return i >= 0 and i < self.m and j >= 0 and j < self.n
+
+    for i in range(self.m):
+      for j in range(self.n):
+        if not vis[self.R[i][j]]:
+          S[i][j] = WIN_SYMBOL
+          vis[self.R[i][j]] = True
+        else:
+          adj_x, adj_y = None, None
+          for tmp_x, tmp_y in [[i - 1, j], [i, j - 1]]:
+            if valid(tmp_x, tmp_y) and S[tmp_x][tmp_y] != None and self.R[i][j] == self.R[tmp_x][tmp_y]:
+              adj_x, adj_y = tmp_x, tmp_y
+              break
+
+          assert(adj_x != None)
+          S[i][j] = '-' if S[adj_x][adj_y] == '|' else '|'
+
+        if S[i][j] == '-':
+          D[self.R[i][j]] += 1
+        else:
+          P[self.R[i][j]] += 1
+    
+    to_change = [0 for _ in range(self.r)]
+    for t in range(self.r):
+      if self.N[t] == -1: continue
+      win_count = D[t] if WIN_SYMBOL == '-' else P[t]
+      lose_count = P[t] if WIN_SYMBOL == '-' else D[t]
+      to_change[t] = self.N[t]-win_count if self.N[t] > win_count else lose_count-self.N[t]
+
+    for i in range(self.m):
+      for j in range(self.n):
+        if to_change[self.R[i][j]] > 0 and S[i][j] == LOSE_SYMBOL:
+          S[i][j] = WIN_SYMBOL
+          to_change[self.R[i][j]] -= 1
+    
+    return {
+      "is_solvable": True,
+      "solution": S,
+    }
 
   def solve_tractable_no_constraint(self):
-    pass
+    return {
+      "is_solvable": True,
+      "solution": [
+        ['-' if (i + j) % 2 == 0 else '|' for j in range(self.n)]
+        for i in range(self.m)
+      ],
+    }
 
   def solve_with_sat(self):
     solver = Glucose3()
@@ -92,13 +146,11 @@ class Solver:
       return {
         "is_solvable": True,
         "solution": S,
-        "time_taken": solver.time()*1000
       }
     else:
       return {
         "is_solvable": False,
         "solution": [],
-        "time_taken": solver.time()*1000
       }
   
   def solve(self):
