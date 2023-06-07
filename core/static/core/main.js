@@ -1,6 +1,6 @@
 /* Const */
 const MINMAX_SIZE = [1, 50];
-const GRID_WIDTH = { 1: "25%", 10: "40%", 20: "50%", 30: "75%", 40: "90%" };
+const GRID_WIDTH = { 1: "20%", 10: "40%", 20: "50%", 30: "75%", 40: "90%" };
 const FONT_SIZE = { 1: "medium", 10: "small", 20: "x-small", 30: "x-small", 40: "xx-small" }
 const DIRS = { "Top": [-1, 0], "Left": [0, -1], "Bottom": [1, 0], "Right": [0, 1] };
 const NO_WALL_STYLE = "dashed 1px var(--gray-300)";
@@ -93,7 +93,7 @@ function setupPuzzleSizeSettingsWidget() {
       gridDiv.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
       for (const minCellCount of Object.keys(GRID_WIDTH).reverse()) {
         if (n >= parseInt(minCellCount)) {
-          gridDiv.style.width = `max(500px, ${GRID_WIDTH[minCellCount]})`;
+          gridDiv.style.width = `max(300px, ${GRID_WIDTH[minCellCount]})`;
           break;
         }
       }

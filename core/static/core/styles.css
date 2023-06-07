@@ -97,11 +97,11 @@ p, h1, h2, h3, h4, h5, h6 {
 
 .text-input {
   display: block; 
-  padding: 0.625rem; 
+  padding: 0.5rem; 
   background-color: var(--gray-50); 
   color: var(--gray-900); 
-  font-size: 0.875rem;
-  line-height: 1.25rem; 
+  font-size: 0.75rem;
+  line-height: 1rem; 
   width: 100%; 
   border-style: solid;
   border-radius: 0.5rem; 
