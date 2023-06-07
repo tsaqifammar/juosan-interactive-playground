@@ -3,8 +3,8 @@ const MINMAX_SIZE = [1, 50];
 const GRID_WIDTH = { 1: "25%", 10: "40%", 20: "50%", 30: "75%", 40: "90%" };
 const FONT_SIZE = { 1: "medium", 10: "small", 20: "x-small", 30: "x-small", 40: "xx-small" }
 const DIRS = { "Top": [-1, 0], "Left": [0, -1], "Bottom": [1, 0], "Right": [0, 1] };
-const NO_WALL_STYLE = "dashed 1px lightgray";
-const WALL_STYLE = "solid 2px black";
+const NO_WALL_STYLE = "dashed 1px var(--gray-300)";
+const WALL_STYLE = "solid 2px var(--gray-900)";
 const TOOLS = { ADD_TERRITORY: "add-territory", ADD_CONSTRAINT: "add-constraint" }
 
 /* Tracked states */
@@ -210,7 +210,7 @@ function handleClick(i, j) {
   if (isSolving) return;
   const handleAddTerritory = () => {
     if (cornersSelected === null) {
-      cellDivs[i][j].style.backgroundColor = "green";
+      cellDivs[i][j].style.backgroundColor = "var(--blue-300)";
       cornersSelected = [i, j];
     } else {
       const [i2, j2] = cornersSelected;
