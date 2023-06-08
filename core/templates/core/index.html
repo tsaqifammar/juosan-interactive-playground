@@ -20,6 +20,11 @@
         <label for="n">N: </label>
         <input type="number" id="n" name="n" min="1" max="50" value="5" class="text-input">
       </div>
+      <div>
+        <select id="example-instances" name="example-instances" class="text-input" onfocus="this.selectedIndex = -1;">
+          <option value="">Load an example puzzle</option>
+        </select>
+      </div>
     </div>
     <div id="tools">
       <ul class="add-tools">
@@ -63,23 +68,24 @@
       </div>
       <div class="modal-content">
         <p>
-          Juosan puzzles, created by Nikoli (the mastermind behind Sudoku), offer a captivating pencil-and-paper challenge. Recently proven to be NP-complete, these puzzles become much harder as the size increases, even for computers.
-          The puzzle is played on an M x N grid with multiple rectangular territories, the goal is to fill each cell with a <button class="mini-dash"></button> or <button class="mini-bar"></button> symbol, following these rules:
+          Juosan puzzles, created by Nikoli (the mastermind behind Sudoku), offer a captivating pencil-and-paper challenge.
+          Recently proven to be NP-complete, these puzzles become much harder as the size increases, even for computers.
+          The puzzle is played on an M x N grid with multiple rectangular territories.
+          The goal is to fill each cell with a <button class="mini-dash"></button> or <button class="mini-bar"></button> symbol, following these rules:
         </p>
         <ul>
           <li>If a territory contains a number, the number of <button class="mini-dash"></button> or <button class="mini-bar"></button> symbols within it must be equal to that number;</li>
-          <li>The <button class="mini-dash"></button> symbol cannot extend vertically for more than two cells.</li>
-          <li>The <button class="mini-bar"></button> symbol cannot extend horizontally for more than two cells;</li>
+          <li>The <button class="mini-dash"></button> symbol cannot extend vertically for more than two cells;</li>
+          <li>The <button class="mini-bar"></button> symbol cannot extend horizontally for more than two cells.</li>
         </ul>
         <p>
           Our solver app utilizes a SAT-based approach to crack Juosan puzzles.
           The puzzle constraints are converted into Boolean formulas, which are then fed into a SAT solver.
           SAT solvers have been extensively optimized over the past 50 years and are widely used for solving Boolean formulas (which is also an NP-complete problem).
-          In fact, competitions have been held to continuously enhance the performance of SAT solvers.
         </p>
 
         <p>
-          For more detailed information about Juosan puzzles, please refer to <a href="https://www.nikoli.co.jp/en/puzzles/juosan/" target="_blank">[1]</a> and <a href="https://www.janko.at/Raetsel/Juosan/index.htm" target="_blank">[2]</a>.
+          For more detailed information about Juosan puzzles, refer to <a href="https://www.nikoli.co.jp/en/puzzles/juosan/" target="_blank">[1]</a> and <a href="https://www.janko.at/Raetsel/Juosan/index.htm" target="_blank">[2]</a>.
         </p>
         <div class="modal-header">
           <h3>
@@ -95,17 +101,18 @@
             <li><strong>Reset</strong>: to clear and reset the grid.</li>
             <li><strong>Solve</strong>: to solve the puzzle that you have drawn.</li>
           </ul>
+          <p>You can also load example puzzles we provided, which are sourced from <a href="https://www.janko.at/Raetsel/Juosan/index.htm" target="_blank">Janko</a>.</p>
         </div>
       </p>
     </div>
   </dialog>
-  <script src="{% static 'core/main.js' %}"></script>
   <script>
-    const openModal = document.getElementById("open-modal");
-    const closeModal = document.getElementById("close-modal");
+    const modal = document.getElementById("modal");
+    document.getElementById("open-modal").addEventListener("click", () => modal.showModal());
+    document.getElementById("close-modal").addEventListener("click", () => modal.close());
 
-    openModal.addEventListener("click", () => modal.showModal());
-    closeModal.addEventListener("click", () => modal.close());
+    const EXAMPLE_INSTANCES = {{ example_instances|safe }};
   </script>
+  <script src="{% static 'core/main.js' %}"></script>
 </body>
 </html>

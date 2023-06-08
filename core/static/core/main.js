@@ -73,11 +73,27 @@ function setToolsDisabledValue(value) {
     })
 }
 
+function adjustGridViewBasedOnColumnCount() {
+  const gridDiv = document.getElementById("grid");
+  for (const minCellCount of Object.keys(GRID_WIDTH).reverse()) {
+    if (n >= parseInt(minCellCount)) {
+      gridDiv.style.width = `max(300px, ${GRID_WIDTH[minCellCount]})`;
+      break;
+    }
+  }
+  for (const minCellCount of Object.keys(FONT_SIZE).reverse()) {
+    if (n >= parseInt(minCellCount)) {
+      gridDiv.style.fontSize = FONT_SIZE[minCellCount];
+      break;
+    }
+  }
+  gridDiv.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
+}
+
 function setupPuzzleSizeSettingsWidget() {
   // Puzzle size settings
   const mInput = document.getElementById("m");
   const nInput = document.getElementById("n");
-  const gridDiv = document.getElementById("grid");
   mInput.addEventListener("change", (e) => {
     if (e.target.value) {
       e.target.value = clamp(e.target.value, MINMAX_SIZE[0], MINMAX_SIZE[1]);
@@ -90,19 +106,7 @@ function setupPuzzleSizeSettingsWidget() {
     if (e.target.value) {
       e.target.value = clamp(e.target.value, MINMAX_SIZE[0], MINMAX_SIZE[1]);
       n = parseInt(e.target.value);
-      gridDiv.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
-      for (const minCellCount of Object.keys(GRID_WIDTH).reverse()) {
-        if (n >= parseInt(minCellCount)) {
-          gridDiv.style.width = `max(300px, ${GRID_WIDTH[minCellCount]})`;
-          break;
-        }
-      }
-      for (const minCellCount of Object.keys(FONT_SIZE).reverse()) {
-        if (n >= parseInt(minCellCount)) {
-          gridDiv.style.fontSize = FONT_SIZE[minCellCount];
-          break;
-        }
-      }
+      adjustGridViewBasedOnColumnCount();
       generateInitialGrid();
       recalculateTerritories();
     }
@@ -198,11 +202,41 @@ function setupSubmitButton() {
   });
 }
 
+function setupLoadExampleInstances() {
+  const select = document.getElementById("example-instances");
+  EXAMPLE_INSTANCES.forEach((instance, idx) => {
+    const option = document.createElement("option");
+    option.value = idx;
+    option.text = instance.name.split(".")[0];
+    select.appendChild(option);
+  });
+
+  select.addEventListener("change", (e) => {
+    const instance = EXAMPLE_INSTANCES[parseInt(e.target.value)]
+    m = instance.m;
+    n = instance.n;
+    document.getElementById("m").value = m;
+    document.getElementById("n").value = n;
+    adjustGridViewBasedOnColumnCount();
+    generateInitialGrid();
+    territoryNums = instance.R;
+    recalculateTerritories();
+    for (let t = 0; t < r; t++) {
+      const [iTop, jTop] = topCornerTerritories[t];
+      cellDivs[iTop][jTop].getElementsByTagName("p")[0].textContent = instance.N[t] != -1 ? instance.N[t] : "";
+    }
+    drawTerritories();
+
+    select.blur();
+  });
+}
+
 function setupToolWidgets() {
   setupPuzzleSizeSettingsWidget();
   setupTools();
   setupResetButton();
   setupSubmitButton();
+  setupLoadExampleInstances();
 }
 
 /* =========================================== */
