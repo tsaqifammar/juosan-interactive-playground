@@ -256,7 +256,7 @@ p, h1, h2, h3, h4, h5, h6 {
 
 /* ================================ */
 
-/* ========= how to modal ========= */
+/* ========= about modal ========= */
 
 #open-modal {
   position: absolute;
@@ -290,6 +290,21 @@ dialog {
 
 dialog::backdrop {
   background-color: rgba(0, 0, 0, 0.3);
+}
+
+dialog[open] {
+  animation: fade-in 300ms ease;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .modal-header {
