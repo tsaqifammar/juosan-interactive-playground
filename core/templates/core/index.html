@@ -11,40 +11,47 @@
 <body>
   <div id="fields" class="container-90 main-layout">
     <h1 style="text-align: center">Juosan Interactive Playground</h1>
-    <div id="grid-size">
-      <div style="display: flex; gap: 0.5rem; align-items: center;">
-        <label for="m">M: </label>
-        <input type="number" id="m" name="m" min="1" max="50" value="5" class="text-input">
-      </div>
-      <div style="display: flex; gap: 0.5rem; align-items: center;">
-        <label for="n">N: </label>
-        <input type="number" id="n" name="n" min="1" max="50" value="5" class="text-input">
-      </div>
-      <div>
+    <div id="startup" class="header-container">
+      <div style="display: flex; gap: 1rem; justify-content: center;">
         <select id="example-instances" name="example-instances" class="text-input" onfocus="this.selectedIndex = -1;">
-          <option value="">Load an example puzzle</option>
+          <option value="">Pick a puzzle level</option>
         </select>
+        <button id="draw" class="btn btn-outline">Draw Your Puzzle</button>
+        <button id="solve-yourself" class="btn btn-fill">Solve Yourself</button>
+        <div style="display: flex; align-items: center; gap: 0.75rem">
+          <button type="button" id="submit" class="btn btn-fill">Autocomplete</button>
+          <div id="loader" class="loading"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        </div>
       </div>
     </div>
-    <div id="tools">
-      <ul class="add-tools">
-        <li class="add-tools-item">
-          <div class="add-tools-item-div">
-            <input type="radio" id="add-territory" name="tool" value="add-territory" class="add-tools-radio-input">
-            <label for="add-territory" class="add-tools-radio-label">Add Territory</label>
-          </div>
-        </li>
-        <li class="add-tools-item">
-          <div class="add-tools-item-div">
-            <input type="radio" id="add-constraint" name="tool" value="add-constraint" class="add-tools-radio-input">
-            <label for="add-constraint" class="add-tools-radio-label">Add Constraint Number</label>
-          </div>
-        </li>
-      </ul>
-      <button type="button" id="reset" class="btn">Reset</button>
-      <div style="display: flex; align-items: center; gap: 0.75rem">
-        <button type="button" id="submit" class="btn">Solve</button>
-        <div id="loader" class="loading"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    <div id="draw-yourself" class="header-container" style="display: none;">
+      <div id="grid-size">
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <label for="m" style="white-space: nowrap;">Height (M): </label>
+          <input type="number" id="m" name="m" min="1" max="50" value="5" class="text-input">
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <label for="n" style="white-space: nowrap;">Width (N): </label>
+          <input type="number" id="n" name="n" min="1" max="50" value="5" class="text-input">
+        </div>
+      </div>
+      <div id="tools">
+        <ul class="add-tools">
+          <li class="add-tools-item">
+            <div class="add-tools-item-div">
+              <input type="radio" id="add-territory" name="tool" value="add-territory" class="add-tools-radio-input">
+              <label for="add-territory" class="add-tools-radio-label">Add Territory</label>
+            </div>
+          </li>
+          <li class="add-tools-item">
+            <div class="add-tools-item-div">
+              <input type="radio" id="add-constraint" name="tool" value="add-constraint" class="add-tools-radio-input">
+              <label for="add-constraint" class="add-tools-radio-label">Add Constraint Number</label>
+            </div>
+          </li>
+        </ul>
+        <button type="button" id="reset" class="btn btn-outline">Reset</button>
+        <button type="button" id="finish-draw" class="btn btn-fill">Finish Drawing</button>
       </div>
     </div>
     <div style="position: relative; margin-top: 2.5rem; width: 100%; display: flex; justify-content: center;">
@@ -93,7 +100,7 @@
           </h3>
         </div>
         <div class="modal-content">
-          <p>You can adjust the puzzle size with the M and N fields at the top.</p>
+          <p>You can adjust the puzzle size with the Height (M) and Width (N) fields at the top.</p>
           <p>Then, some tools are provided, namely:</p>
           <ul>
             <li><strong>Add territory</strong>: Click two opposite corners to draw a territory.</li>

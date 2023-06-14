@@ -14,6 +14,7 @@ let territorySizes = { 0: m*n };
 let cellDivs = [];
 let messageDiv = document.getElementById("message");
 let selectedTool = "";
+let mode = 0; // 0: startup, 1: draw, 2: solve yourself
 
 // States for "add territory" tool
 let cornersSelected = null;
@@ -64,7 +65,69 @@ function setIsSolving(val) {
   if (val) resetAddTerritoryStates();
 }
 
-/* ============== Tool widgets =============== */
+function clearSolution() {
+  solutionIsShown = false;
+  for (let i = 0; i < m; i++)
+    for (let j = 0; j < n; j++)
+      cellDivs[i][j].classList.remove("cell-dash", "cell-bar");
+}
+
+/* ============== Startup Tool Widgets =============== */
+
+function setupLoadExampleInstances() {
+  const select = document.getElementById("example-instances");
+  EXAMPLE_INSTANCES.forEach((instance, idx) => {
+    const option = document.createElement("option");
+    option.value = idx;
+    option.text = instance.name.split(".")[0];
+    select.appendChild(option);
+  });
+
+  select.addEventListener("change", (e) => {
+    const instance = EXAMPLE_INSTANCES[parseInt(e.target.value)]
+    m = instance.m;
+    n = instance.n;
+    document.getElementById("m").value = m;
+    document.getElementById("n").value = n;
+    adjustGridViewBasedOnColumnCount();
+    generateInitialGrid();
+    territoryNums = instance.R;
+    recalculateTerritories();
+    for (let t = 0; t < r; t++) {
+      const [iTop, jTop] = topCornerTerritories[t];
+      cellDivs[iTop][jTop].getElementsByTagName("p")[0].textContent = instance.N[t] != -1 ? instance.N[t] : "";
+    }
+    drawTerritories();
+
+    select.blur();
+  });
+}
+
+function setupDrawYourselfButton() {
+  const startDrawingButton = document.getElementById("draw");
+  const finishDrawingButton = document.getElementById("finish-draw");
+  const setStartupDisplay = (isStartup) => {
+    if (solutionIsShown) clearSolution();
+    selectedTool = "";
+    document.getElementById("add-territory").checked = false;
+    document.getElementById("add-constraint").checked = false;
+    messageDiv.textContent = "";
+    setEditables(false);
+    document.getElementById("startup").style.display = isStartup ? "flex" : "none";
+    document.getElementById("draw-yourself").style.display = isStartup ? "none" : "flex";
+  };
+  startDrawingButton.addEventListener("click", () => setStartupDisplay(false));
+  finishDrawingButton.addEventListener("click", () => setStartupDisplay(true));
+}
+
+function setupStartupTools() {
+  setupLoadExampleInstances();
+  setupDrawYourselfButton();
+}
+
+/* =================================================== */
+
+/* ============== Drawing Tool widgets =============== */
 
 function setToolsDisabledValue(value) {
   document.querySelectorAll("#m,#n,#add-territory,#add-constraint,#reset,#submit")
@@ -115,12 +178,6 @@ function setupPuzzleSizeSettingsWidget() {
 
 function setupTools() {
   const handleToolChange = (toolName) => {
-    if (solutionIsShown) {
-      solutionIsShown = false;
-      for (let i = 0; i < m; i++)
-        for (let j = 0; j < n; j++)
-          cellDivs[i][j].classList.remove("cell-dash", "cell-bar");
-    }
     if (toolName === TOOLS.ADD_TERRITORY) {
       selectedTool = TOOLS.ADD_TERRITORY;
       messageDiv.textContent = "Pick two opposite corners of the territory.";
@@ -202,41 +259,11 @@ function setupSubmitButton() {
   });
 }
 
-function setupLoadExampleInstances() {
-  const select = document.getElementById("example-instances");
-  EXAMPLE_INSTANCES.forEach((instance, idx) => {
-    const option = document.createElement("option");
-    option.value = idx;
-    option.text = instance.name.split(".")[0];
-    select.appendChild(option);
-  });
-
-  select.addEventListener("change", (e) => {
-    const instance = EXAMPLE_INSTANCES[parseInt(e.target.value)]
-    m = instance.m;
-    n = instance.n;
-    document.getElementById("m").value = m;
-    document.getElementById("n").value = n;
-    adjustGridViewBasedOnColumnCount();
-    generateInitialGrid();
-    territoryNums = instance.R;
-    recalculateTerritories();
-    for (let t = 0; t < r; t++) {
-      const [iTop, jTop] = topCornerTerritories[t];
-      cellDivs[iTop][jTop].getElementsByTagName("p")[0].textContent = instance.N[t] != -1 ? instance.N[t] : "";
-    }
-    drawTerritories();
-
-    select.blur();
-  });
-}
-
-function setupToolWidgets() {
+function setupDrawingToolWidgets() {
   setupPuzzleSizeSettingsWidget();
   setupTools();
   setupResetButton();
   setupSubmitButton();
-  setupLoadExampleInstances();
 }
 
 /* =========================================== */
@@ -392,7 +419,8 @@ function drawTerritories() {
 }
 
 function main() {
-  setupToolWidgets();
+  setupStartupTools();
+  setupDrawingToolWidgets();
   generateInitialGrid();
   drawTerritories();
 }
