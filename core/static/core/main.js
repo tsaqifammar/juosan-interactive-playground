@@ -6,6 +6,8 @@ const DIRS = { "Top": [-1, 0], "Left": [0, -1], "Bottom": [1, 0], "Right": [0, 1
 const NO_WALL_STYLE = "dashed 1px var(--gray-300)";
 const WALL_STYLE = "solid 2px var(--gray-900)";
 const TOOLS = { ADD_TERRITORY: "add-territory", ADD_CONSTRAINT: "add-constraint" }
+const BAR_CLASS = "cell-bar", DASH_CLASS = "cell-dash";
+const BAD_CELL = "bad-cell", BAD_TERRITORY = "bad-territory", EMPTY_CELL = "empty";
 
 /* Tracked states */
 let m = 5, n = 5, r = 1;
@@ -14,7 +16,6 @@ let territorySizes = { 0: m*n };
 let cellDivs = [];
 let messageDiv = document.getElementById("message");
 let selectedTool = "";
-let mode = 0; // 0: startup, 1: draw, 2: solve yourself
 
 // States for "add territory" tool
 let cornersSelected = null;
@@ -69,7 +70,18 @@ function clearSolution() {
   solutionIsShown = false;
   for (let i = 0; i < m; i++)
     for (let j = 0; j < n; j++)
-      cellDivs[i][j].classList.remove("cell-dash", "cell-bar");
+      cellDivs[i][j].classList.remove(DASH_CLASS, BAR_CLASS);
+}
+
+// States for "Solve yourself" feature
+let userIsSolvingManually = false;
+let isValidating = false;
+let hintIsShown = false;
+function clearHints() {
+  hintIsShown = false;
+  for (let i = 0; i < m; i++)
+    for (let j = 0; j < n; j++)
+      cellDivs[i][j].classList.remove(EMPTY_CELL, BAD_CELL, BAD_TERRITORY);
 }
 
 /* ============== Startup Tool Widgets =============== */
@@ -120,9 +132,107 @@ function setupDrawYourselfButton() {
   finishDrawingButton.addEventListener("click", () => setStartupDisplay(true));
 }
 
+function setupSolveYourself() {
+  const solveYourselfButton = document.getElementById("solve-yourself");
+  const validateButton = document.getElementById("validate");
+  const setOthersDisabled = (val) => {
+    document.getElementById("example-instances").disabled = val;
+    document.getElementById("draw").disabled = val;
+    document.getElementById("submit").disabled = val;
+  };
+  solveYourselfButton.addEventListener("click", () => {
+    cellsFilled = 0;
+    clearSolution();
+    if (!userIsSolvingManually) {
+      setOthersDisabled(true);
+      solveYourselfButton.textContent = "Give Up";
+      validateButton.style.display = "block";
+      messageDiv.textContent = "Click the cell to fill it with a symbol.";
+    } else {
+      setOthersDisabled(false);
+      if (hintIsShown) clearHints();
+      solveYourselfButton.textContent = "Solve Yourself";
+      validateButton.style.display = "none";
+      messageDiv.textContent = "";
+    }
+    userIsSolvingManually = !userIsSolvingManually;
+  });
+
+  validateButton.addEventListener("click", () => {
+    // Validate solution
+    isValidating = true;
+    setToolsDisabledValue(true);
+    document.getElementById("loader-validate").style.display = "block";
+
+    // Construct N based on the drawn puzzle
+    let N = new Array(r);
+    for (let t = 0; t < r; t++) {
+      const [topI, topJ] = topCornerTerritories[t];
+      const val = cellDivs[topI][topJ].getElementsByTagName("p")[0].textContent;
+      N[t] = isNumeric(val) ? parseInt(val) : -1;
+    }
+
+    // Construct S based on the solution the user has drawn
+    let S = Array(m).fill().map(() => Array(n).fill());
+    for (let i = 0; i < m; i++)
+      for (let j = 0; j < n; j++)
+        S[i][j] = cellDivs[i][j].classList.contains(DASH_CLASS)
+          ? "-" : cellDivs[i][j].classList.contains(BAR_CLASS)
+          ? "|" : "";
+
+    const url = "/validate";
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        m, n, r, N, S,
+        R: territoryNums,
+      }),
+    }).then((res) => {
+      if (!res.ok) throw new Error('Request failed with status: ' + res.status);
+      return res.json();
+    }).then((data) => {
+      const { correct, bad_cells, bad_territories, empty_cells } = data;
+      if (correct) {
+        messageDiv.textContent = "Congrats! You've solved the puzzle! 🥳 Press \"Done\" to return.";
+        solveYourselfButton.textContent = "Done";
+      } else {
+        hintIsShown = true;
+        messageDiv.textContent = "Your solution is incorrect 😢 We added red hints to assist you.";
+        bad_cells.forEach((c) => {
+          const [i, j] = c;
+          cellDivs[i][j].classList.add(BAD_CELL);
+        });
+        bad_territories.forEach((t) => {
+          const [topI, topJ] = topCornerTerritories[t];
+          cellDivs[topI][topJ].classList.remove(BAD_CELL);
+          cellDivs[topI][topJ].classList.add(BAD_TERRITORY);
+        });
+        empty_cells.forEach((c) => {
+          const [i, j] = c;
+          cellDivs[i][j].classList.remove(BAD_CELL, BAD_TERRITORY);
+          cellDivs[i][j].classList.add(EMPTY_CELL);
+        });
+      }
+    }).catch((e) => {
+      alert(e.message);
+    }).finally(() => {
+      isValidating = false;
+      setToolsDisabledValue(false);
+      document.getElementById("loader-validate").style.display = "none";
+      document.getElementById("example-instances").disabled = true;
+      document.getElementById("draw").disabled = true;
+      document.getElementById("submit").disabled = true;
+    });
+  });
+}
+
 function setupStartupTools() {
   setupLoadExampleInstances();
   setupDrawYourselfButton();
+  setupSolveYourself();
 }
 
 /* =================================================== */
@@ -130,7 +240,7 @@ function setupStartupTools() {
 /* ============== Drawing Tool widgets =============== */
 
 function setToolsDisabledValue(value) {
-  document.querySelectorAll("#m,#n,#add-territory,#add-constraint,#reset,#submit")
+  document.querySelectorAll("#m,#n,#add-territory,#add-constraint,#reset,#submit,#example-instances,#draw,#solve-yourself,#validate")
     .forEach(e => {
       e.disabled = value;
     })
@@ -246,7 +356,7 @@ function setupSubmitButton() {
       if (is_solvable) {
         for (let i = 0; i < m; i++)
           for (let j = 0; j < n; j++)
-            cellDivs[i][j].classList.add(solution[i][j] === "-" ? "cell-dash" : "cell-bar");
+            cellDivs[i][j].classList.add(solution[i][j] === "-" ? DASH_CLASS : BAR_CLASS);
         solutionIsShown = true;
         messageDiv.textContent = "The puzzle has a solution."
       } else {
@@ -268,8 +378,21 @@ function setupDrawingToolWidgets() {
 
 /* =========================================== */
 
-function handleClick(i, j) {
-  if (isSolving) return;
+function handleClickSolve(i, j) {
+  if (hintIsShown) clearHints();
+  messageDiv.textContent = "Click the cell to fill it with a symbol.";
+  document.getElementById("solve-yourself").textContent = "Give Up";
+  if (cellDivs[i][j].classList.contains(DASH_CLASS)) {
+    cellDivs[i][j].classList.remove(DASH_CLASS);
+    cellDivs[i][j].classList.add(BAR_CLASS);
+  } else if (cellDivs[i][j].classList.contains(BAR_CLASS)) {
+    cellDivs[i][j].classList.remove(BAR_CLASS);
+  } else {
+    cellDivs[i][j].classList.add(DASH_CLASS);
+  }
+}
+
+function handleClickDraw(i, j) {
   const handleAddTerritory = () => {
     if (cornersSelected === null) {
       cellDivs[i][j].style.backgroundColor = "var(--blue-300)";
@@ -352,7 +475,14 @@ function generateInitialGrid() {
     });
 
     cellDiv.appendChild(p);
-    cellDiv.addEventListener("click", () => handleClick(i, j));
+    cellDiv.addEventListener("click", () => {
+      if (isSolving) return;
+      if (isValidating) return;
+      if (userIsSolvingManually)
+        handleClickSolve(i, j);
+      else
+        handleClickDraw(i, j);
+    });
     cellDiv.addEventListener("mouseover", () => handleHover(i, j));
     return cellDiv;
   };

@@ -133,6 +133,8 @@ p, h1, h2, h3, h4, h5, h6 {
   white-space: nowrap;
 }
 
+.btn[disabled], select[disabled] { cursor: not-allowed; }
+
 .btn-fill {
   background-color: var(--gray-800); 
   color: var(--white); 
@@ -146,6 +148,11 @@ p, h1, h2, h3, h4, h5, h6 {
 
 .btn-fill:hover {
   background-color: var(--gray-900); 
+}
+
+.btn-fill[disabled] {
+  background-color: var(--gray-500);
+  color: var(--gray-200);
 }
 
 .btn-outline {
@@ -163,6 +170,9 @@ p, h1, h2, h3, h4, h5, h6 {
 .btn-outline:hover {
   background-color: var(--gray-100);
 }
+
+.btn-outline[disabled] { color: var(--gray-500); }
+.btn-outline[disabled]:hover { background-color: var(--white); }
 
 .add-tools {
   display: flex;
@@ -260,6 +270,40 @@ p, h1, h2, h3, h4, h5, h6 {
 
 .cell-highlighted {
   background-color: var(--gray-100);
+}
+
+.bad-cell::after {
+  content: "";
+  position: absolute;
+  margin: auto;
+  inset: 0;
+  width: 25%;
+  height: 25%;
+  border: 2px solid var(--red-500);
+  border-radius: 50%;
+  opacity: 50%;
+}
+
+.bad-territory::after {
+  content: "";
+  position: absolute;
+  top: 15%;
+  left: 10%;
+  width: 20%;
+  height: 30%;
+  border: 2px solid var(--red-500);
+  opacity: 50%;
+}
+
+.empty::after {
+  content: "";
+  position: absolute;
+  margin: auto;
+  inset: 0;
+  width: 10%;
+  height: 10%;
+  background-color: var(--red-500);
+  opacity: 50%;
 }
 
 /* ================================ */
