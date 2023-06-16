@@ -165,7 +165,7 @@ function setupSolveYourself() {
       setOthersDisabled(true);
       solveYourselfButton.textContent = "Give Up";
       validateButton.style.display = "block";
-      messageDiv.textContent = "Click the cell to fill it with a symbol.";
+      messageDiv.textContent = "Click a cell multiple times to fill it with a symbol you want.";
     } else {
       setOthersDisabled(false);
       if (hintIsShown) clearHints();
@@ -383,7 +383,7 @@ function setupDrawingToolWidgets() {
 
 function handleClickSolve(i, j) {
   if (hintIsShown) clearHints();
-  messageDiv.textContent = "Click the cell to fill it with a symbol.";
+  messageDiv.textContent = "Click a cell multiple times to fill it with a symbol you want.";
   document.getElementById("solve-yourself").textContent = "Give Up";
   if (cellDivs[i][j].classList.contains(DASH_CLASS)) {
     cellDivs[i][j].classList.remove(DASH_CLASS);
