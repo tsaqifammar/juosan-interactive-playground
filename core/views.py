@@ -4,6 +4,7 @@ from django.shortcuts import render
 from core.lib.solver import Solver
 from core.lib.validate import validate_solution
 import os, json
+import time
 
 # Create your views here.
 @require_http_methods(["GET"])
@@ -26,7 +27,10 @@ def solve(request: HttpRequest):
       return HttpResponseBadRequest("The keys m, n, r, N, and R must all be included.")
 
   solver = Solver(**body)
+  start = time.time()
   val = solver.solve()
+  print(f"{time.time() - start} seconds solve execution time.")
+
   return JsonResponse(val)
 
 @require_http_methods(["POST"])

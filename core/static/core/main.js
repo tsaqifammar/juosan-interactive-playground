@@ -1,5 +1,5 @@
 /* Const */
-const MINMAX_SIZE = [1, 50];
+const MINMAX_SIZE = [1, 25];
 const GRID_WIDTH = { 1: "20%", 10: "40%", 20: "50%", 30: "75%", 40: "90%" };
 const FONT_SIZE = { 1: "medium", 10: "small", 20: "x-small", 30: "x-small", 40: "xx-small" }
 const DIRS = { "Top": [-1, 0], "Left": [0, -1], "Bottom": [1, 0], "Right": [0, 1] };
@@ -129,7 +129,25 @@ function setupDrawYourselfButton() {
     document.getElementById("draw-yourself").style.display = isStartup ? "none" : "flex";
   };
   startDrawingButton.addEventListener("click", () => setStartupDisplay(false));
-  finishDrawingButton.addEventListener("click", () => setStartupDisplay(true));
+
+  const validateInstanceRectangular = () => {
+    for (let i = 0; i < m - 1; i++) {
+      for (let j = 0; j < n - 1; j++) {
+        let con1 = (territoryNums[i][j] == territoryNums[i+1][j+1] && territoryNums[i+1][j] != territoryNums[i][j+1]);
+        let con2 = (territoryNums[i][j] != territoryNums[i+1][j+1] && territoryNums[i+1][j] == territoryNums[i][j+1]);
+        if (con1 || con2)
+          return false;
+      }
+    }
+    return true;
+  };
+  finishDrawingButton.addEventListener("click", () => {
+    if (!validateInstanceRectangular()) {
+      alert("All territories must be rectangular.");
+      return;
+    }
+    setStartupDisplay(true)
+  });
 }
 
 function setupSolveYourself() {
@@ -308,23 +326,8 @@ function setupResetButton() {
 }
 
 function setupSubmitButton() {
-  const validateInstanceRectangular = () => {
-    for (let i = 0; i < m - 1; i++) {
-      for (let j = 0; j < n - 1; j++) {
-        let con1 = (territoryNums[i][j] == territoryNums[i+1][j+1] && territoryNums[i+1][j] != territoryNums[i][j+1]);
-        let con2 = (territoryNums[i][j] != territoryNums[i+1][j+1] && territoryNums[i+1][j] == territoryNums[i][j+1]);
-        if (con1 || con2)
-          return false;
-      }
-    }
-    return true;
-  };
   const submitButton = document.getElementById("submit");
   submitButton.addEventListener("click", (e) => {
-    if (!validateInstanceRectangular()) {
-      alert("All territories must be rectangular.");
-      return;
-    }
     selectedTool = "";
     document.getElementById("add-territory").checked = false;
     document.getElementById("add-constraint").checked = false;
