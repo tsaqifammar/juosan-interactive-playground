@@ -231,6 +231,7 @@ p, h1, h2, h3, h4, h5, h6 {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   border: solid 2px var(--gray-900);
+  margin-bottom: 2rem;
 }
 
 .cell {

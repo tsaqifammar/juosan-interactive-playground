@@ -14,7 +14,7 @@
     <div id="startup" class="header-container">
       <div style="display: flex; gap: 1rem; justify-content: center;">
         <select id="example-instances" name="example-instances" class="text-input" onfocus="this.selectedIndex = -1;">
-          <option value="">Pick a puzzle level</option>
+          <option value="">Choose a puzzle level</option>
         </select>
         <button id="draw" class="btn btn-outline">Draw Your Puzzle</button>
         <button id="solve-yourself" class="btn btn-fill">Solve Yourself</button>
@@ -32,11 +32,11 @@
       <div id="grid-size">
         <div style="display: flex; gap: 0.5rem; align-items: center;">
           <label for="m" style="white-space: nowrap;">Height (M): </label>
-          <input type="number" id="m" name="m" min="1" max="50" value="5" class="text-input">
+          <input type="number" id="m" name="m" min="1" max="25" value="5" class="text-input">
         </div>
         <div style="display: flex; gap: 0.5rem; align-items: center;">
           <label for="n" style="white-space: nowrap;">Width (N): </label>
-          <input type="number" id="n" name="n" min="1" max="50" value="5" class="text-input">
+          <input type="number" id="n" name="n" min="1" max="25" value="5" class="text-input">
         </div>
       </div>
       <div id="tools">
@@ -89,30 +89,46 @@
           <li>The <button class="mini-dash"></button> symbol cannot extend vertically for more than two cells;</li>
           <li>The <button class="mini-bar"></button> symbol cannot extend horizontally for more than two cells.</li>
         </ul>
-        <p>
-          Our solver app utilizes a SAT-based approach to crack Juosan puzzles.
-          The puzzle constraints are converted into Boolean formulas, which are then fed into a SAT solver.
-          SAT solvers have been extensively optimized over the past 50 years and are widely used for solving Boolean formulas (which is also an NP-complete problem).
-        </p>
 
         <p>
           For more detailed information about Juosan puzzles, refer to <a href="https://www.nikoli.co.jp/en/puzzles/juosan/" target="_blank">[1]</a> and <a href="https://www.janko.at/Raetsel/Juosan/index.htm" target="_blank">[2]</a>.
         </p>
+
         <div class="modal-header">
           <h3>
             How to use
           </h3>
         </div>
         <div class="modal-content">
+          <p>To get started, you can choose a puzzle level from the provided example puzzles. Alternatively, you can draw your own Juosan puzzle by clicking the "Draw Your Puzzle" button.</p>
+
+          <p>Then, you have two options:</p>
+          <ul>
+            <li>Attempt to solve the puzzle yourself by clicking the "Solve Yourself" button.</li>
+            <li>Press the "Autocomplete" button to let our solver complete it for you.</li>
+          </ul>
+          <p>
+            When solving the puzzle yourself, you can fill a cell by clicking on it multiple times to cycle through the available symbols.
+            Once you have finished solving, simply press "Submit".
+          </p>
+        </div>
+
+        <div class="modal-header">
+          <h3>
+            How to draw your puzzle
+          </h3>
+        </div>
+        <div class="modal-content">
+          <p>To enter the drawing mode, click the "Draw Your Puzzle" button.</p>
           <p>You can adjust the puzzle size with the Height (M) and Width (N) fields at the top.</p>
           <p>Then, some tools are provided, namely:</p>
           <ul>
-            <li><strong>Add territory</strong>: Click two opposite corners to draw a territory.</li>
-            <li><strong>Add constraint number to a territory</strong>: Click a territory and enter a number.</li>
+            <li><strong>Add territory</strong>: click two opposite corners to draw a territory.</li>
+            <li><strong>Add constraint number to a territory</strong>: click a territory and enter a number.</li>
             <li><strong>Reset</strong>: to clear and reset the grid.</li>
-            <li><strong>Solve</strong>: to solve the puzzle that you have drawn.</li>
+            <li><strong>Finish</strong>: to finalize your puzzle.</li>
           </ul>
-          <p>You can also load example puzzles we provided, which are sourced from <a href="https://www.janko.at/Raetsel/Juosan/index.htm" target="_blank">Janko</a>.</p>
+          <p>Note that all territories must be rectangular for your puzzle to be considered valid.</p>
         </div>
       </p>
     </div>
