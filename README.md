@@ -1,4 +1,4 @@
-# Juosan Interactive Playground App
+# Juosan Interactive Playground
 
 The Juosan Interactive Playground app is a user-friendly and interactive tool that allows puzzle enthusiasts to design and solve Juosan puzzles.
 The key features of the app include:
