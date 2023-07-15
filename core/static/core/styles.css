@@ -122,6 +122,25 @@ p, h1, h2, h3, h4, h5, h6 {
   border-color: var(--blue-500);
 }
 
+.select-input {
+  display: block; 
+  padding: 0.5rem; 
+  background-color: var(--gray-50); 
+  color: var(--gray-900); 
+  font-size: 0.75rem;
+  line-height: 1rem; 
+  border-style: solid;
+  border-radius: 0.5rem; 
+  border-width: 1px; 
+  border-color: var(--gray-300); 
+}
+
+.select-input:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  border-color: var(--blue-500);
+}
+
 .btn {
   cursor: pointer;
   padding: 0.625rem 1.25rem;
@@ -314,8 +333,8 @@ p, h1, h2, h3, h4, h5, h6 {
 #open-modal {
   position: absolute;
   top: 1rem;
-  left: 1rem;
-  font-size: 0.875rem;
+  right: 1rem;
+  font-size: 1rem;
   cursor: pointer;
   background: none;
   display: flex;
