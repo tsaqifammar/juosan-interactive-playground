@@ -9,7 +9,7 @@ The key features of the app include:
 
 * **Solve Yourself**: Engage in the puzzle-solving process of the Juosan puzzle.
 
-* **Autocomplete Feature**: If you need assistance, the app offers an ``Autocomplete'' button that employs a built-in solver to complete the puzzle for you.
+* **Autocomplete Feature**: If you need assistance, the app offers an "Autocomplete" button that employs a built-in solver to complete the puzzle for you.
 
 The Juosan Interactive Playground app combines the joy of solving puzzles with the convenience of digital technology.
 Whether you choose pre-designed puzzles or create your own, this app provides a delightful platform to explore and solve Juosan puzzles interactively.
